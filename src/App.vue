@@ -1,9 +1,10 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  <router-view/>
+  <nav >
+    <div class="navbar-brand"><i class="fa-solid fa-laptop-code fa-2x"></i><strong class="brand-name">LECO</strong></div>
+    <router-link class="navbar-links" to="/">Inicio</router-link>
+    <router-link class="navbar-links" to="/about">Listado</router-link>
   </nav>
+  <router-view/>
 </template>
 
 <style>
@@ -11,20 +12,35 @@
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
 }
 
 nav {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
   padding: 30px;
 }
 
+.navbar-brand{
+  width: 70%;
+}
+.navbar-links{
+  width: 15%;
+}
 nav a {
+  font-size: 1.5rem;
   font-weight: bold;
   color: #2c3e50;
 }
 
 nav a.router-link-exact-active {
+  color: #42b983;
+}
+
+.brand-name{
+  font-size: 2rem;
   color: #42b983;
 }
 </style>
