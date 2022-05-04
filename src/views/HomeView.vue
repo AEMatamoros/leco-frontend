@@ -3,12 +3,11 @@
     <div id="drawflow" ref="drawflow" class="drawflow-container"></div>
     <div class="terminal">
       <div class="options w-100">
-        <div class="w-50 p-1">
-          <div class="btn btn-success form-control" @click="importNodes()">
-            Importar
-          </div>
+        <div class="w-100 p-1">
+          <label for="custom-input" class="btn btn-success form-control" >Importar</label>
+          <input id="custom-input" class="btn btn-success form-control" accept="aplication/json" placeholder="Importar" type="file" ref="customInput" @change="importNodes()" hidden/>
         </div>
-        <div class="w-50 p-1">
+        <div class="w-100 p-1">
           <div class="btn btn-success form-control" @click="saveNodes()">
             Exportar
           </div>
@@ -55,6 +54,15 @@
             Bucle
           </div>
         </div>
+        <h2>Terminal</h2>
+        <div class="w-100 p-1">
+          <div class="btn btn-success w-100 form-control" @click="showCode()">
+            Mostrar Codigo
+          </div>
+        </div>
+      <div class="w-100 p-1">
+          <textarea rows="11" cols="" class="form-control" disabled ref="terminal"></textarea>
+      </div>
     </div>
   </div>
 </template>
@@ -78,10 +86,24 @@ export default {
   methods: {
     saveNodes() {
       let exportedNodes = this.editor.export()
-      console.log(exportedNodes)
+      
+          var a = document.createElement("a");
+          var file = new Blob([JSON.stringify(exportedNodes)], {type: "text/plain"});
+          a.href = URL.createObjectURL(file);
+          a.download = "Nodes.json";
+          a.click();
+      
     },
     importNodes() {
-      this.editor.import()
+      let referenci = this.$refs.customInput.files[0]
+      let content;
+      const reader = new FileReader();
+      reader.onload = (res) => {
+          this.editor.import(JSON.parse(res.target.result));
+      };
+      reader.onerror = (err) => console.log(err);
+      reader.readAsText(referenci);
+      
     },
     addValueNode(){
       var html = `
@@ -161,12 +183,9 @@ export default {
       var data = { "value": 0 };
       this.editor.addNode("Bucle", 2, 0, 0, 0, "child-node node-element-structure", {},html );
     },
-    sum(e){console.log(e)},
-    sub(e){console.log(e)},
-    mul(e){console.log(e)},
-    div(e){console.log(e)},
-
-        
+    showCode(){
+      this.$refs.terminal.value = "Python Code"
+    }
   },
   mounted() {
     const Vue = { version: 3, h, render }
@@ -184,7 +203,120 @@ export default {
 
     this.editor.start()
 
-
+    if(!!this.$route.params.id){
+      console.log("cargando");
+      this.editor.import(
+        this.currentData()
+      );
+    }else{
+      this.editor.clear()
+    }
+  },
+  methods: {
+    currentData(){
+      return {
+    "drawflow": {
+        "Home": {
+            "data": {
+                "1": {
+                    "id": 1,
+                    "name": "Value",
+                    "data": {
+                        "value": 1
+                    },
+                    "class": "child-node node-element",
+                    "html": "\n        <h3 >Valor</h3>\n        <div>\n          <select type=\"text\" df-value class=\"form-control\">\n            <option>1</option>\n            <option>2</option>\n            <option>3</option>\n            <option>4</option>\n            <option>5</option>\n            <option>6</option>\n            <option>7</option>\n            <option>8</option>\n            <option>9</option>\n            <option>10</option>\n          </select>\n        </div>\n      ",
+                    "typenode": false,
+                    "inputs": {},
+                    "outputs": {
+                        "output_1": {
+                            "connections": []
+                        }
+                    },
+                    "pos_x": 541,
+                    "pos_y": 129
+                },
+                "2": {
+                    "id": 2,
+                    "name": "Suma",
+                    "data": {},
+                    "class": "child-node node-element-operation",
+                    "html": "\n        <h3 >Suma</h3>\n      ",
+                    "typenode": false,
+                    "inputs": {
+                        "input_1": {
+                            "connections": []
+                        },
+                        "input_2": {
+                            "connections": []
+                        }
+                    },
+                    "outputs": {},
+                    "pos_x": 134,
+                    "pos_y": 178
+                },
+                "3": {
+                    "id": 3,
+                    "name": "Restar",
+                    "data": {},
+                    "class": "child-node node-element-operation",
+                    "html": "\n        <h3 >Resta</h3>\n      ",
+                    "typenode": false,
+                    "inputs": {
+                        "input_1": {
+                            "connections": []
+                        },
+                        "input_2": {
+                            "connections": []
+                        }
+                    },
+                    "outputs": {},
+                    "pos_x": 473,
+                    "pos_y": 349
+                },
+                "4": {
+                    "id": 4,
+                    "name": "Multiplicar",
+                    "data": {},
+                    "class": "child-node node-element-operation",
+                    "html": "\n        <h3 >Muliplicación</h3>\n      ",
+                    "typenode": false,
+                    "inputs": {
+                        "input_1": {
+                            "connections": []
+                        },
+                        "input_2": {
+                            "connections": []
+                        }
+                    },
+                    "outputs": {},
+                    "pos_x": 108,
+                    "pos_y": 328
+                },
+                "5": {
+                    "id": 5,
+                    "name": "Dividir",
+                    "data": {},
+                    "class": "child-node node-element-operation",
+                    "html": "\n        <h3 >División</h3>\n      ",
+                    "typenode": false,
+                    "inputs": {
+                        "input_1": {
+                            "connections": []
+                        },
+                        "input_2": {
+                            "connections": []
+                        }
+                    },
+                    "outputs": {},
+                    "pos_x": 145,
+                    "pos_y": 34
+                }
+            }
+        }
+    }
+}
+    }
   },
   setup() {},
 }
@@ -204,7 +336,7 @@ export default {
   margin: 0;
   padding: 20px;
   width: 70%;
-  height: 100vh;
+  height: 85vh;
   text-align: initial;
   background: #42b983;
   background-size: 20px 20px;

@@ -2,9 +2,9 @@
   <nav >
     <div class="navbar-brand"><i class="fa-solid fa-laptop-code fa-2x"></i><strong class="brand-name">LECO</strong></div>
     <router-link class="navbar-links" to="/">Inicio</router-link>
-    <router-link class="navbar-links" to="/about">Listado</router-link>
+    <router-link class="navbar-links" to="/list">Listado</router-link>
   </nav>
-  <router-view/>
+  <router-view :key="$route.path" />
 </template>
 
 <style>
