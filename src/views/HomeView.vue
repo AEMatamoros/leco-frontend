@@ -86,7 +86,7 @@ export default {
   methods: {
     saveNodes() {
       let exportedNodes = this.editor.export()
-      
+      console.log(exportedNodes)
           var a = document.createElement("a");
           var file = new Blob([JSON.stringify(exportedNodes)], {type: "text/plain"});
           a.href = URL.createObjectURL(file);
@@ -206,15 +206,7 @@ export default {
     if(!!this.$route.params.id){
       console.log("cargando");
       this.editor.import(
-        this.currentData()
-      );
-    }else{
-      this.editor.clear()
-    }
-  },
-  methods: {
-    currentData(){
-      return {
+        {
     "drawflow": {
         "Home": {
             "data": {
@@ -316,6 +308,9 @@ export default {
         }
     }
 }
+      );
+    }else{
+      this.editor.clear()
     }
   },
   setup() {},
