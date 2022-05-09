@@ -4,11 +4,22 @@
     <div class="terminal">
       <div class="options w-100">
         <div class="w-100 p-1">
-          <label for="custom-input" class="btn btn-success form-control" >Importar</label>
-          <input id="custom-input" class="btn btn-success form-control" accept="aplication/json" placeholder="Importar" type="file" ref="customInput" @change="importNodes()" hidden/>
+          <label for="custom-input" class="btn btn-success form-control">
+            Importar
+          </label>
+          <input
+            id="custom-input"
+            class="btn btn-success form-control"
+            accept="aplication/json"
+            placeholder="Importar"
+            type="file"
+            ref="customInput"
+            @change="importNodes()"
+            hidden
+          />
         </div>
         <div class="w-100 p-1">
-          <div class="btn btn-success form-control" @click="saveNodes()">
+          <div class="btn btn-success form-control" @click="exportNodes()">
             Exportar
           </div>
         </div>
@@ -20,48 +31,54 @@
       </div>
       <h2>Agregar Nodos</h2>
       <div class="w-100 p-1">
-          <div class="btn btn-success w-100 form-control" @click="addValueNode()">
-            Valor
-          </div>
+        <div class="btn btn-success w-100 form-control" @click="addValueNode()">
+          Valor
+        </div>
       </div>
       <div class="w-100 p-1">
-          <div class="btn btn-success w-100 form-control" @click="addSumNode()">
-            Suma
-          </div>
+        <div class="btn btn-success w-100 form-control" @click="addSumNode()">
+          Suma
         </div>
-        <div class="w-100 p-1">
-          <div class="btn btn-success w-100 form-control" @click="addSubNode()">
-            Resta
-          </div>
-        </div>
-        <div class="w-100 p-1">
-          <div class="btn btn-success w-100 form-control" @click="addMulNode()">
-            Multiplicación
-          </div>
-        </div>
-        <div class="w-100 p-1">
-          <div class="btn btn-success w-100 form-control" @click="addDivNode()">
-            División
-          </div>
-        </div>
-        <div class="w-100 p-1">
-          <div class="btn btn-success w-100 form-control" @click="addCondNode()">
-            Condicional
-          </div>
-        </div>
-        <div class="w-100 p-1">
-          <div class="btn btn-success w-100 form-control" @click="addBucleNode()">
-            Bucle
-          </div>
-        </div>
-        <h2>Terminal</h2>
-        <div class="w-100 p-1">
-          <div class="btn btn-success w-100 form-control" @click="showCode()">
-            Mostrar Codigo
-          </div>
-        </div>
+      </div>
       <div class="w-100 p-1">
-          <textarea rows="11" cols="" class="form-control" disabled ref="terminal"></textarea>
+        <div class="btn btn-success w-100 form-control" @click="addSubNode()">
+          Resta
+        </div>
+      </div>
+      <div class="w-100 p-1">
+        <div class="btn btn-success w-100 form-control" @click="addMulNode()">
+          Multiplicación
+        </div>
+      </div>
+      <div class="w-100 p-1">
+        <div class="btn btn-success w-100 form-control" @click="addDivNode()">
+          División
+        </div>
+      </div>
+      <div class="w-100 p-1">
+        <div class="btn btn-success w-100 form-control" @click="addCondNode()">
+          Condicional
+        </div>
+      </div>
+      <div class="w-100 p-1">
+        <div class="btn btn-success w-100 form-control" @click="addBucleNode()">
+          Bucle
+        </div>
+      </div>
+      <h2>Terminal</h2>
+      <div class="w-100 p-1">
+        <div class="btn btn-success w-100 form-control" @click="showCode()">
+          Mostrar Codigo
+        </div>
+      </div>
+      <div class="w-100 p-1">
+        <textarea
+          rows="11"
+          cols=""
+          class="form-control"
+          disabled
+          ref="terminal"
+        ></textarea>
       </div>
     </div>
   </div>
@@ -74,6 +91,8 @@ import styleDrawflow from 'drawflow/dist/drawflow.min.css'
 
 //INSTANCE
 import { h, getCurrentInstance, render, onMounted } from 'vue'
+//FETCH
+import { fetchAPI } from '../helpers/fetch.js';
 
 export default {
   name: 'HomeView',
@@ -84,28 +103,35 @@ export default {
     }
   },
   methods: {
+    exportNodes() {
+      let exportedNodes = this.editor.export()
+      var a = document.createElement('a')
+      var file = new Blob([JSON.stringify(exportedNodes)], {
+        type: 'text/plain',
+      })
+      a.href = URL.createObjectURL(file)
+      a.download = 'Nodes.json'
+      a.click()
+    },
     saveNodes() {
       let exportedNodes = this.editor.export()
-      console.log(exportedNodes)
-          var a = document.createElement("a");
-          var file = new Blob([JSON.stringify(exportedNodes)], {type: "text/plain"});
-          a.href = URL.createObjectURL(file);
-          a.download = "Nodes.json";
-          a.click();
-      
+      let drawflowObject = {
+        name:"PruebaFromApp",
+        exportedNodes:JSON.stringify(exportedNodes)
+      }
+      this.saveObject(drawflowObject)
     },
     importNodes() {
       let referenci = this.$refs.customInput.files[0]
-      let content;
-      const reader = new FileReader();
+      let content
+      const reader = new FileReader()
       reader.onload = (res) => {
-          this.editor.import(JSON.parse(res.target.result));
-      };
-      reader.onerror = (err) => console.log(err);
-      reader.readAsText(referenci);
-      
+        this.editor.import(JSON.parse(res.target.result))
+      }
+      reader.onerror = (err) => console.log(err)
+      reader.readAsText(referenci)
     },
-    addValueNode(){
+    addValueNode() {
       var html = `
         <h3 >Valor</h3>
         <div>
@@ -122,40 +148,84 @@ export default {
             <option>10</option>
           </select>
         </div>
-      `;
-      var data = { "value": 1 };
-      this.editor.addNode("Value", 0, 1, 0, 0, "child-node node-element",data,html );
-      
+      `
+      var data = { value: 1 }
+      this.editor.addNode(
+        'Value',
+        0,
+        1,
+        0,
+        0,
+        'child-node node-element',
+        data,
+        html,
+      )
     },
-    addSumNode(){
+    addSumNode() {
       var html = `
         <h3 >Suma</h3>
-      `;
-      var data = { "value": 0 };
-      this.editor.addNode("Suma", 2, 0, 0, 0, "child-node node-element-operation", {},html );
+      `
+      var data = { value: 0 }
+      this.editor.addNode(
+        'Suma',
+        2,
+        0,
+        0,
+        0,
+        'child-node node-element-operation',
+        {},
+        html,
+      )
     },
-    addSubNode(){
+    addSubNode() {
       var html = `
         <h3 >Resta</h3>
-      `;
-      var data = { "value": 0 };
-      this.editor.addNode("Restar", 2, 0, 0, 0, "child-node node-element-operation", {},html );
+      `
+      var data = { value: 0 }
+      this.editor.addNode(
+        'Restar',
+        2,
+        0,
+        0,
+        0,
+        'child-node node-element-operation',
+        {},
+        html,
+      )
     },
-    addMulNode(){
+    addMulNode() {
       var html = `
         <h3 >Muliplicación</h3>
-      `;
-      var data = { "value": 0 };
-      this.editor.addNode("Multiplicar", 2, 0, 0, 0, "child-node node-element-operation", {},html );
+      `
+      var data = { value: 0 }
+      this.editor.addNode(
+        'Multiplicar',
+        2,
+        0,
+        0,
+        0,
+        'child-node node-element-operation',
+        {},
+        html,
+      )
     },
-    addDivNode(){
+    addDivNode() {
       var html = `
         <h3 >División</h3>
-      `;
-      var data = { "value": 0 };
-      this.editor.addNode("Dividir", 2, 0, 0, 0, "child-node node-element-operation", {},html );
+      `
+      var data = { value: 0 }
+      this.editor.addNode(
+        'Dividir',
+        2,
+        0,
+        0,
+        0,
+        'child-node node-element-operation',
+        {},
+        html,
+      )
     },
-    addCondNode(){
+    addCondNode() {
       var html = `
         <h3 >Condición</h3>
         <div>
@@ -168,24 +238,56 @@ export default {
             <option>!=</option>
           </select>
         </div>
-      `;
-      var data = { "value": 0 };
-      this.editor.addNode("Condicional", 2, 0, 0, 0, "child-node node-element-structure", {},html );
+      `
+      var data = { value: 0 }
+      this.editor.addNode(
+        'Condicional',
+        2,
+        0,
+        0,
+        0,
+        'child-node node-element-structure',
+        {},
+        html,
+      )
     },
-    addBucleNode(){
+    addBucleNode() {
       var html = `
         <h3 >Bucle</h3>
         <div>
           <textarea type="text" df-value class="form-control">
           </textarea>
         </div>
-      `;
-      var data = { "value": 0 };
-      this.editor.addNode("Bucle", 2, 0, 0, 0, "child-node node-element-structure", {},html );
+      `
+      var data = { value: 0 }
+      this.editor.addNode(
+        'Bucle',
+        2,
+        0,
+        0,
+        0,
+        'child-node node-element-structure',
+        {},
+        html,
+      )
     },
-    showCode(){
-      this.$refs.terminal.value = "Python Code"
-    }
+    showCode() {
+      this.$refs.terminal.value = 'Python Code'
+    },
+    async getDrawById(id) {
+        let response = await fetchAPI(`${id}`,{});
+        let data = await response.json();
+        data.drawflow[0].exportedNodes = JSON.parse(data.drawflow[0].exportedNodes);
+        this.editor.import(data.drawflow[0].exportedNodes)
+    },
+    async saveObject(drawflowExport) {
+        let response = await fetchAPI(``,drawflowExport, `POST`);
+        if(response.status == 200){
+          console.log("Guardado de forma correcta")
+        }else{
+          console.error("Ocurrio un error al guardar el flujo")
+        }
+    },
   },
   mounted() {
     const Vue = { version: 3, h, render }
@@ -203,114 +305,14 @@ export default {
 
     this.editor.start()
 
-    if(!!this.$route.params.id){
-      console.log("cargando");
-      this.editor.import(
-        {
-    "drawflow": {
-        "Home": {
-            "data": {
-                "1": {
-                    "id": 1,
-                    "name": "Value",
-                    "data": {
-                        "value": 1
-                    },
-                    "class": "child-node node-element",
-                    "html": "\n        <h3 >Valor</h3>\n        <div>\n          <select type=\"text\" df-value class=\"form-control\">\n            <option>1</option>\n            <option>2</option>\n            <option>3</option>\n            <option>4</option>\n            <option>5</option>\n            <option>6</option>\n            <option>7</option>\n            <option>8</option>\n            <option>9</option>\n            <option>10</option>\n          </select>\n        </div>\n      ",
-                    "typenode": false,
-                    "inputs": {},
-                    "outputs": {
-                        "output_1": {
-                            "connections": []
-                        }
-                    },
-                    "pos_x": 541,
-                    "pos_y": 129
-                },
-                "2": {
-                    "id": 2,
-                    "name": "Suma",
-                    "data": {},
-                    "class": "child-node node-element-operation",
-                    "html": "\n        <h3 >Suma</h3>\n      ",
-                    "typenode": false,
-                    "inputs": {
-                        "input_1": {
-                            "connections": []
-                        },
-                        "input_2": {
-                            "connections": []
-                        }
-                    },
-                    "outputs": {},
-                    "pos_x": 134,
-                    "pos_y": 178
-                },
-                "3": {
-                    "id": 3,
-                    "name": "Restar",
-                    "data": {},
-                    "class": "child-node node-element-operation",
-                    "html": "\n        <h3 >Resta</h3>\n      ",
-                    "typenode": false,
-                    "inputs": {
-                        "input_1": {
-                            "connections": []
-                        },
-                        "input_2": {
-                            "connections": []
-                        }
-                    },
-                    "outputs": {},
-                    "pos_x": 473,
-                    "pos_y": 349
-                },
-                "4": {
-                    "id": 4,
-                    "name": "Multiplicar",
-                    "data": {},
-                    "class": "child-node node-element-operation",
-                    "html": "\n        <h3 >Muliplicación</h3>\n      ",
-                    "typenode": false,
-                    "inputs": {
-                        "input_1": {
-                            "connections": []
-                        },
-                        "input_2": {
-                            "connections": []
-                        }
-                    },
-                    "outputs": {},
-                    "pos_x": 108,
-                    "pos_y": 328
-                },
-                "5": {
-                    "id": 5,
-                    "name": "Dividir",
-                    "data": {},
-                    "class": "child-node node-element-operation",
-                    "html": "\n        <h3 >División</h3>\n      ",
-                    "typenode": false,
-                    "inputs": {
-                        "input_1": {
-                            "connections": []
-                        },
-                        "input_2": {
-                            "connections": []
-                        }
-                    },
-                    "outputs": {},
-                    "pos_x": 145,
-                    "pos_y": 34
-                }
-            }
-        }
-    }
-}
-      );
-    }else{
+    if (!!this.$route.params.id) {
+
+      this.getDrawById(this.$route.params.id)
+
+    } else {
+
       this.editor.clear()
+
     }
   },
   setup() {},

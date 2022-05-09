@@ -4,7 +4,7 @@
     <router-link class="navbar-links" to="/">Inicio</router-link>
     <router-link class="navbar-links" to="/list">Listado</router-link>
   </nav>
-  <router-view :key="$route.path" />
+  <router-view :key="$route.path" class="px-4"/>
 </template>
 
 <style>

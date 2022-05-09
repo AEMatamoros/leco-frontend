@@ -2,20 +2,32 @@
   <div class="about">
     <h1>Listado de elementos</h1>
     <ul>
-      <li v-for="element in list" v-bind:key="element">
-          <router-link class="navbar-links" :to="`/${element}`">Inicio</router-link>
-
+      <li v-for="element in drawflowItems" v-bind:key="element">
+          <router-link class="navbar-links" :to="`/${element.uid}`">{{element.name}}</router-link>
       </li>
     </ul>
   </div>
 </template>
 
 <script>
+//FETCH
+import { fetchAPI } from '../helpers/fetch.js';
+
 export default {
   data(){
     return {
-      list:[1,2,3,4,5]
+      drawflowItems:[]
     }
-  }
+  },
+  methods: {
+    async getListOfDraws() {
+        let response = await fetchAPI('',{});
+        let data = await response.json();
+        this.drawflowItems = data.drawflow;
+    }
+  },
+  created() {
+    this.getListOfDraws()
+  },
 }
 </script>
