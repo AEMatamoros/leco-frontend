@@ -75,6 +75,11 @@
         </div>
       </div>
       <div class="w-100 p-1">
+        <div class="btn btn-success w-100 form-control" @click="executeCode()">
+          Ejecutar Codigo
+        </div>
+      </div>
+      <div class="w-100 p-1">
         <textarea
           rows="11"
           cols=""
@@ -96,6 +101,8 @@ import styleDrawflow from 'drawflow/dist/drawflow.min.css'
 import { h, getCurrentInstance, render, onMounted } from 'vue'
 //FETCH
 import { fetchAPI } from '../helpers/fetch.js';
+//CODE GENERATOR
+import { transFormDrawflow } from '../helpers/pythonCodeGenerator.js';
 
 export default {
   name: 'HomeView',
@@ -128,6 +135,7 @@ export default {
       // }else{
       //   this.saveObject(drawflowObject)
       // }
+      console.log(drawflowObject)
       this.saveObject(drawflowObject)
     },
     importNodes() {
@@ -239,16 +247,17 @@ export default {
         <h3 >Condición</h3>
         <div>
           <select type="text" df-value class="form-control">
-            <option>==</option>
-            <option>=></option>
-            <option>=<</option>
-            <option><</option>
-            <option>></option>
-            <option>!=</option>
+            <option value="" selected disabled>Selecciona una opción</option>
+            <option value="==">==</option>
+            <option value=">=">>=</option>
+            <option value="<="><=</option>
+            <option value="<"><</option>
+            <option value=">">></option>
+            <option value="!=">!=</option>
           </select>
         </div>
       `
-      var data = { value: 0 }
+      var data = { value: '' }
       this.editor.addNode(
         'Condicional',
         2,
@@ -256,17 +265,13 @@ export default {
         0,
         0,
         'child-node node-element-structure',
-        {},
+        data,
         html,
       )
     },
     addBucleNode() {
       var html = `
         <h3 >Bucle</h3>
-        <div>
-          <textarea type="text" df-value class="form-control">
-          </textarea>
-        </div>
       `
       var data = { value: 0 }
       this.editor.addNode(
@@ -281,7 +286,16 @@ export default {
       )
     },
     showCode() {
-      this.$refs.terminal.value = 'Python Code'
+
+      this.$refs.terminal.value = transFormDrawflow(this.editor.export())
+
+    },
+    async executeCode() {
+      console.log({code:transFormDrawflow(this.editor.export()).replaceAll('"',"'")})
+      let response = await fetchAPI(`execute`,{code:transFormDrawflow(this.editor.export())}, `POST`);
+      let data = await response.text();
+      this.$refs.terminal.value = data
+
     },
     async getDrawById(id) {
         let response = await fetchAPI(`${id}`,{});
@@ -350,7 +364,7 @@ export default {
   margin: 0;
   padding: 20px;
   width: 70%;
-  height: 85vh;
+  height: 95vh;
   text-align: initial;
   background: #42b983;
   background-size: 20px 20px;
