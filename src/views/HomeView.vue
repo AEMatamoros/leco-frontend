@@ -25,7 +25,10 @@
         </div>
         <div class="w-100 p-1">
           <div class="btn btn-success w-100 form-control" @click="saveNodes()">
-            Guardar
+            
+            <span v-if="$route.params.id">Actualizar</span>
+            <span v-else>Guardar</span>
+
           </div>
         </div>
       </div>
@@ -100,6 +103,7 @@ export default {
   data() {
     return {
       editor: null,
+      objectId:undefined
     }
   },
   methods: {
@@ -119,6 +123,11 @@ export default {
         name:"PruebaFromApp",
         exportedNodes:JSON.stringify(exportedNodes)
       }
+      // if(!!this.objectId){
+      //   this.updateObject(drawflowObject)
+      // }else{
+      //   this.saveObject(drawflowObject)
+      // }
       this.saveObject(drawflowObject)
     },
     importNodes() {
@@ -288,6 +297,14 @@ export default {
           console.error("Ocurrio un error al guardar el flujo")
         }
     },
+    async updateObject(drawflowExport) {
+        let response = await fetchAPI(`${this.objectId}`,drawflowExport, `PUT`);
+        if(response.status == 200){
+          console.log("Actualizado de forma correcta")
+        }else{
+          console.error("Ocurrio un error al actualizar el flujo")
+        }
+    },
   },
   mounted() {
     const Vue = { version: 3, h, render }
@@ -306,7 +323,7 @@ export default {
     this.editor.start()
 
     if (!!this.$route.params.id) {
-
+      this.objectId = this.$route.params.id
       this.getDrawById(this.$route.params.id)
 
     } else {
