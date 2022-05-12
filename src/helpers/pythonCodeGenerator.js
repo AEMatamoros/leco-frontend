@@ -1,6 +1,4 @@
-//FORMAT
-let code = {"code":"for i in [1, 2, 3, 4]:print(i, end=' ')\na=5\nb=5\nprint(a+b)"}
-
+//Format Object
 export const transFormDrawflow = (drawflowObject)=>{
     let inNodes = [];
     let outNodes = [];
@@ -74,6 +72,7 @@ export const transFormDrawflow = (drawflowObject)=>{
     return convertToString(inNodes, outNodes)
 }
 
+//Get code in String Format
 const convertToString = (inNodes, outNodes) =>{
     let code = ""
     inNodes.forEach(node => {
@@ -97,7 +96,7 @@ const convertToString = (inNodes, outNodes) =>{
                 code += `print("El Resultado de la division es: ", num${inNodes.filter(inNode=>inNode.id==node.input1[0].inNode.node)[0].id} + num${inNodes.filter(inNode=>inNode.id==node.input2[0].inNode.node)[0].id})\n`
                 break;
             case "Condicional":
-                code += `print("El Resultado de la comparación es ${node.value} : ", num${inNodes.filter(inNode=>inNode.id==node.input1[0].inNode.node)[0].id} ${node.value} num${inNodes.filter(inNode=>inNode.id==node.input2[0].inNode.node)[0].id})\n`
+                code += `print("El Resultado de la igualdad es ${node.value} : ", num${inNodes.filter(inNode=>inNode.id==node.input1[0].inNode.node)[0].id} ${node.value} num${inNodes.filter(inNode=>inNode.id==node.input2[0].inNode.node)[0].id})\n`
                 break
             case "Bucle":
                 code += `print("Imprimiendo en bucle")\nfor i in range(${inNodes.filter(inNode=>inNode.id==node.input1[0].inNode.node)[0].value}):\n\tprint(${inNodes.filter(inNode=>inNode.id==node.input2[0].inNode.node)[0].value})\n`

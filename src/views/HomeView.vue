@@ -1,6 +1,18 @@
 <template>
   <div class="home">
-    <div id="drawflow" ref="drawflow" class="drawflow-container"></div>
+    <div class="drawflow-container-father">
+      <div id="drawflow" ref="drawflow" class="drawflow-container"></div>
+      <div class="w-100 p-0 mt-1">
+        <textarea
+          rows="11"
+          cols=""
+          disabled
+          ref="terminal"
+          class="form-control bg-dark text-success"
+          style="font-weight: bold; font-size: 2rem;"
+        ></textarea>
+      </div>
+    </div>
     <div class="terminal">
       <div class="options w-100">
         <div class="w-100 p-1">
@@ -25,10 +37,8 @@
         </div>
         <div class="w-100 p-1">
           <div class="btn btn-success w-100 form-control" @click="saveNodes()">
-            
             <span v-if="$route.params.id">Actualizar</span>
             <span v-else>Guardar</span>
-
           </div>
         </div>
       </div>
@@ -79,14 +89,16 @@
           Ejecutar Codigo
         </div>
       </div>
+      <h2>Nombre</h2>
       <div class="w-100 p-1">
-        <textarea
-          rows="11"
-          cols=""
-          class="form-control"
-          disabled
-          ref="terminal"
-        ></textarea>
+        <div class="form-group">
+          <input
+            type="text"
+            class="form-control"
+            id="drawname"
+            ref="drawname"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -100,9 +112,9 @@ import styleDrawflow from 'drawflow/dist/drawflow.min.css'
 //INSTANCE
 import { h, getCurrentInstance, render, onMounted } from 'vue'
 //FETCH
-import { fetchAPI } from '../helpers/fetch.js';
+import { fetchAPI } from '../helpers/fetch.js'
 //CODE GENERATOR
-import { transFormDrawflow } from '../helpers/pythonCodeGenerator.js';
+import { transFormDrawflow } from '../helpers/pythonCodeGenerator.js'
 
 export default {
   name: 'HomeView',
@@ -110,7 +122,7 @@ export default {
   data() {
     return {
       editor: null,
-      objectId:undefined
+      objectId: undefined,
     }
   },
   methods: {
@@ -127,16 +139,24 @@ export default {
     saveNodes() {
       let exportedNodes = this.editor.export()
       let drawflowObject = {
-        name:"PruebaFromApp",
-        exportedNodes:JSON.stringify(exportedNodes)
+        name: this.$refs.drawname.value,
+        exportedNodes: JSON.stringify(exportedNodes),
       }
-      // if(!!this.objectId){
-      //   this.updateObject(drawflowObject)
-      // }else{
-      //   this.saveObject(drawflowObject)
-      // }
-      console.log(drawflowObject)
-      this.saveObject(drawflowObject)
+      
+      if (!!drawflowObject.name && !!drawflowObject.exportedNodes) {
+        if(!!this.objectId){
+          this.updateObject(drawflowObject);
+        }else{
+          this.saveObject(drawflowObject);
+        }
+      } else {
+        this.$swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text:
+            'Verifica que tu diagrama tenga un nombre y minimo un nodo agregado',
+        })
+      }
     },
     importNodes() {
       let referenci = this.$refs.customInput.files[0]
@@ -145,7 +165,7 @@ export default {
       reader.onload = (res) => {
         this.editor.import(JSON.parse(res.target.result))
       }
-      reader.onerror = (err) => console.log(err)
+      reader.onerror = (err) => console.error(err)
       reader.readAsText(referenci)
     },
     addValueNode() {
@@ -286,38 +306,67 @@ export default {
       )
     },
     showCode() {
-
       this.$refs.terminal.value = transFormDrawflow(this.editor.export())
-
     },
     async executeCode() {
-      console.log({code:transFormDrawflow(this.editor.export()).replaceAll('"',"'")})
-      let response = await fetchAPI(`execute`,{code:transFormDrawflow(this.editor.export())}, `POST`);
-      let data = await response.text();
-      this.$refs.terminal.value = data
-
+      let response = await fetchAPI(
+        `execute`,
+        { code: transFormDrawflow(this.editor.export()) },
+        `POST`,
+      )
+      let data = await response.text()
+      if (!!data) {
+        this.$refs.terminal.value = data
+      } else {
+        this.$swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Ocurrio un error al ejecutar el codigo',
+        })
+      }
     },
     async getDrawById(id) {
-        let response = await fetchAPI(`${id}`,{});
-        let data = await response.json();
-        data.drawflow[0].exportedNodes = JSON.parse(data.drawflow[0].exportedNodes);
-        this.editor.import(data.drawflow[0].exportedNodes)
+      let response = await fetchAPI(`${id}`, {})
+      let data = await response.json()
+      data.drawflow[0].exportedNodes = JSON.parse(
+        data.drawflow[0].exportedNodes,
+      )
+      this.editor.import(data.drawflow[0].exportedNodes)
+      this.$refs.drawname.value = data.drawflow[0].name
     },
     async saveObject(drawflowExport) {
-        let response = await fetchAPI(``,drawflowExport, `POST`);
-        if(response.status == 200){
-          console.log("Guardado de forma correcta")
-        }else{
-          console.error("Ocurrio un error al guardar el flujo")
-        }
+      let response = await fetchAPI(``, drawflowExport, `POST`)
+      if (response.status == 200) {
+        this.$swal.fire({
+          icon: 'success',
+          title: 'Diagrama salvado correctamente',
+          showConfirmButton: false,
+        })
+        this.$router.push({ name: 'list' })
+      } else {
+        this.$swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Ocurrio un error al guardar el diagrama',
+        })
+      }
     },
     async updateObject(drawflowExport) {
-        let response = await fetchAPI(`${this.objectId}`,drawflowExport, `PUT`);
-        if(response.status == 200){
-          console.log("Actualizado de forma correcta")
-        }else{
-          console.error("Ocurrio un error al actualizar el flujo")
-        }
+      let response = await fetchAPI(`${this.objectId}`, drawflowExport, `PUT`)
+      if (response.status == 200) {
+        this.$swal.fire({
+          icon: 'success',
+          title: 'Diagrama salvado correctamente',
+          showConfirmButton: false,
+        })
+        this.$router.push({ name: 'list' })
+      } else {
+        this.$swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Ocurrio un error al guardar el diagrama',
+        })
+      }
     },
   },
   mounted() {
@@ -339,11 +388,8 @@ export default {
     if (!!this.$route.params.id) {
       this.objectId = this.$route.params.id
       this.getDrawById(this.$route.params.id)
-
     } else {
-
       this.editor.clear()
-
     }
   },
   setup() {},
@@ -360,11 +406,15 @@ export default {
   width: 30%;
   padding: 0 20px;
 }
+.drawflow-container-father {
+  width: 70%;
+  height: 95vh;
+}
 .drawflow-container {
   margin: 0;
   padding: 20px;
-  width: 70%;
-  height: 95vh;
+  width: 100%;
+  height: 50vh;
   text-align: initial;
   background: #42b983;
   background-size: 20px 20px;
@@ -405,7 +455,7 @@ export default {
     width: 100%;
     padding: 0 20px;
   }
-  .drawflow-container {
+  .drawflow-container-father {
     width: 100%;
   }
 }
