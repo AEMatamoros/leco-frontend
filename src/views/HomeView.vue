@@ -145,7 +145,8 @@ export default {
       
       if (!!drawflowObject.name && !!drawflowObject.exportedNodes) {
         if(!!this.objectId){
-          this.updateObject(drawflowObject);
+          this.saveObject(drawflowObject);
+          // this.updateObject(drawflowObject);
         }else{
           this.saveObject(drawflowObject);
         }

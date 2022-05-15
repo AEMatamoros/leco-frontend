@@ -1,5 +1,8 @@
 # leco-frontend
 
+## Reposirorio del Backend
+https://github.com/AEMatamoros/leco-backend.git
+
 ## Project setup
 ```
 npm install

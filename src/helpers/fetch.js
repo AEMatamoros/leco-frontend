@@ -1,7 +1,7 @@
 const API_URL = "http://localhost:3000"
 
 const fetchAPI = (endpoint,data,method = 'GET') =>{
-    const url = `${API_URL}/${endpoint}`;
+    const url = `${API_URL}/diagrams/${endpoint}`;
     try{
         if ( method=== 'GET' ){
             return fetch(url)
