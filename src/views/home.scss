@@ -1,0 +1,63 @@
+.home {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .terminal {
+    height: 50vh !important;
+    width: 30%;
+    padding: 0 20px;
+  }
+  .drawflow-container-father {
+    width: 70%;
+    height: 95vh;
+  }
+  .drawflow-container {
+    margin: 0;
+    padding: 20px;
+    width: 100%;
+    height: 50vh;
+    text-align: initial;
+    background: #42b983;
+    background-size: 20px 20px;
+    background-image: radial-gradient(#494949 1px, transparent 1px);
+  }
+  
+  .child-node {
+    width: 350px !important;
+    min-height: 100px !important;
+    height: auto !important;
+    border-radius: 10px;
+  }
+  
+  .node-element {
+    background-color: rgb(217, 176, 255) !important;
+  }
+  
+  .node-element-operation {
+    background-color: rgb(176, 255, 180) !important;
+  }
+  
+  .node-element-structure {
+    background-color: rgb(255, 254, 176) !important;
+  }
+  
+  .custom-input {
+    width: 100%;
+  }
+  .options {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  @media (max-width: 792px) {
+    .terminal {
+      margin-top: 50px;
+      width: 100%;
+      padding: 0 20px;
+    }
+    .drawflow-container-father {
+      width: 100%;
+    }
+  }

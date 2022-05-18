@@ -108,13 +108,14 @@
 //DRAWFLOW
 import Drawflow from 'drawflow'
 import styleDrawflow from 'drawflow/dist/drawflow.min.css'
-
 //INSTANCE
-import { h, getCurrentInstance, render, onMounted } from 'vue'
+import { h, getCurrentInstance, render } from 'vue'
 //FETCH
 import { fetchAPI } from '../helpers/fetch.js'
 //CODE GENERATOR
 import { transFormDrawflow } from '../helpers/pythonCodeGenerator.js'
+//NodesHTML
+import { nodes } from '../helpers/returnNodesHTML';
 
 export default {
   name: 'HomeView',
@@ -144,12 +145,9 @@ export default {
       }
       
       if (!!drawflowObject.name && !!drawflowObject.exportedNodes) {
-        if(!!this.objectId){
+        
           this.saveObject(drawflowObject);
-          // this.updateObject(drawflowObject);
-        }else{
-          this.saveObject(drawflowObject);
-        }
+
       } else {
         this.$swal.fire({
           icon: 'error',
@@ -161,7 +159,6 @@ export default {
     },
     importNodes() {
       let referenci = this.$refs.customInput.files[0]
-      let content
       const reader = new FileReader()
       reader.onload = (res) => {
         this.editor.import(JSON.parse(res.target.result))
@@ -170,156 +167,29 @@ export default {
       reader.readAsText(referenci)
     },
     addValueNode() {
-      var html = `
-        <h3 >Valor</h3>
-        <div>
-          <select type="text" df-value class="form-control">
-            <option>1</option>
-            <option>2</option>
-            <option>3</option>
-            <option>4</option>
-            <option>5</option>
-            <option>6</option>
-            <option>7</option>
-            <option>8</option>
-            <option>9</option>
-            <option>10</option>
-          </select>
-          <p>Salida:Un valor entero.</p>
-        </div>
-      `
       var data = { value: 1 }
-      this.editor.addNode(
-        'Value',
-        0,
-        1,
-        0,
-        0,
-        'child-node node-element',
-        data,
-        html,
-      )
+      this.editor.addNode( 'Value', 0, 1, 0, 0, 'child-node node-element', data, nodes.valueNodeHtml,)
     },
     addSumNode() {
-      var html = `
-        <h3>Suma</h3>
-        <p>Numero 1</p>
-        <p>Numero 2</p>
-      `
-      var data = { value: 0 }
-      this.editor.addNode(
-        'Suma',
-        2,
-        0,
-        0,
-        0,
-        'child-node node-element-operation',
-        {},
-        html,
-      )
+      this.editor.addNode( 'Suma', 2, 0, 0, 0, 'child-node node-element-operation', {}, nodes.sumNodeHtml,)
     },
     addSubNode() {
-      var html = `
-        <h3 >Resta</h3>
-        <p>Numero 1</p>
-        <p>Numero 2</p>
-      `
-      var data = { value: 0 }
-      this.editor.addNode(
-        'Restar',
-        2,
-        0,
-        0,
-        0,
-        'child-node node-element-operation',
-        {},
-        html,
-      )
+      this.editor.addNode( 'Restar', 2, 0, 0, 0, 'child-node node-element-operation', {}, nodes.subNodeHtml,)
     },
     addMulNode() {
-      var html = `
-        <h3 >Muliplicación</h3>
-        <p>Numero 1</p>
-        <p>Numero 2</p>
-      `
-      var data = { value: 0 }
-      this.editor.addNode(
-        'Multiplicar',
-        2,
-        0,
-        0,
-        0,
-        'child-node node-element-operation',
-        {},
-        html,
-      )
+      this.editor.addNode( 'Multiplicar', 2, 0, 0, 0, 'child-node node-element-operation', {}, nodes.mulNodeHtml,)
     },
     addDivNode() {
-      var html = `
-        <h3 >División</h3>
-        <p>Numero 1</p>
-        <p>Numero 2</p>
-      `
-      var data = { value: 0 }
-      this.editor.addNode(
-        'Dividir',
-        2,
-        0,
-        0,
-        0,
-        'child-node node-element-operation',
-        {},
-        html,
-      )
+      this.editor.addNode( 'Dividir', 2, 0, 0, 0, 'child-node node-element-operation', {}, nodes.divNodeHtml,)
     },
     addCondNode() {
-      var html = `
-        <h3 >Condición</h3>
-        <div>
-          <select type="text" df-value class="form-control">
-            <option value="" selected disabled>Selecciona una opción</option>
-            <option value="==">==</option>
-            <option value=">=">>=</option>
-            <option value="<="><=</option>
-            <option value="<"><</option>
-            <option value=">">></option>
-            <option value="!=">!=</option>
-          </select>
-        </div>
-        <p>Numero 1</p>
-        <p>Numero 2</p>
-      `
-      var data = { value: '' }
-      this.editor.addNode(
-        'Condicional',
-        2,
-        0,
-        0,
-        0,
-        'child-node node-element-structure',
-        data,
-        html,
-      )
+      this.editor.addNode('Condicional',2,0,0,0,'child-node node-element-structure',{},nodes.conditionNodeHtml,)
     },
     addBucleNode() {
-      var html = `
-        <h3 >Bucle</h3>
-        <p>Numero 1:Numero de Iteraciones</p>
-        <p>Numero 2:Numero a Imprimir</p>
-      `
-      var data = { value: 0 }
-      this.editor.addNode(
-        'Bucle',
-        2,
-        0,
-        0,
-        0,
-        'child-node node-element-structure',
-        {},
-        html,
-      )
+      this.editor.addNode( 'Bucle', 2, 0, 0, 0, 'child-node node-element-structure', {}, nodes.bucleNodeHtml,)
     },
     showCode() {
+      console.log(this.editor.export())
       this.$refs.terminal.value = transFormDrawflow(this.editor.export())
     },
     async executeCode() {
@@ -385,7 +255,6 @@ export default {
   },
   mounted() {
     const Vue = { version: 3, h, render }
-
     this.id = this.$refs.drawflow
     this.editor = new Drawflow(this.id, Vue)
     // Pass render Vue 3 Instance
@@ -411,67 +280,5 @@ export default {
 </script>
 
 <style>
-.home {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-}
-.terminal {
-  height: 50vh !important;
-  width: 30%;
-  padding: 0 20px;
-}
-.drawflow-container-father {
-  width: 70%;
-  height: 95vh;
-}
-.drawflow-container {
-  margin: 0;
-  padding: 20px;
-  width: 100%;
-  height: 50vh;
-  text-align: initial;
-  background: #42b983;
-  background-size: 20px 20px;
-  background-image: radial-gradient(#494949 1px, transparent 1px);
-}
-
-.child-node {
-  width: 300px !important;
-  min-height: 100px !important;
-  height: auto !important;
-  border-radius: 10px;
-}
-
-.node-element {
-  background-color: rgb(217, 176, 255) !important;
-}
-
-.node-element-operation {
-  background-color: rgb(176, 255, 180) !important;
-}
-
-.node-element-structure {
-  background-color: rgb(255, 254, 176) !important;
-}
-
-.custom-input {
-  width: 100%;
-}
-.options {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-}
-
-@media (max-width: 792px) {
-  .terminal {
-    margin-top: 50px;
-    width: 100%;
-    padding: 0 20px;
-  }
-  .drawflow-container-father {
-    width: 100%;
-  }
-}
+  @import "./home.scss";
 </style>
