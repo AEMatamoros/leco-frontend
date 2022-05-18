@@ -9,7 +9,7 @@
           disabled
           ref="terminal"
           class="form-control bg-dark text-success"
-          style="font-weight: bold; font-size: 2rem;"
+          style="font-weight: bold; font-size: 2rem; height:50vh;"
         ></textarea>
       </div>
     </div>
@@ -185,6 +185,7 @@ export default {
             <option>9</option>
             <option>10</option>
           </select>
+          <p>Salida:Un valor entero.</p>
         </div>
       `
       var data = { value: 1 }
@@ -201,7 +202,9 @@ export default {
     },
     addSumNode() {
       var html = `
-        <h3 >Suma</h3>
+        <h3>Suma</h3>
+        <p>Numero 1</p>
+        <p>Numero 2</p>
       `
       var data = { value: 0 }
       this.editor.addNode(
@@ -218,6 +221,8 @@ export default {
     addSubNode() {
       var html = `
         <h3 >Resta</h3>
+        <p>Numero 1</p>
+        <p>Numero 2</p>
       `
       var data = { value: 0 }
       this.editor.addNode(
@@ -234,6 +239,8 @@ export default {
     addMulNode() {
       var html = `
         <h3 >Muliplicación</h3>
+        <p>Numero 1</p>
+        <p>Numero 2</p>
       `
       var data = { value: 0 }
       this.editor.addNode(
@@ -250,6 +257,8 @@ export default {
     addDivNode() {
       var html = `
         <h3 >División</h3>
+        <p>Numero 1</p>
+        <p>Numero 2</p>
       `
       var data = { value: 0 }
       this.editor.addNode(
@@ -277,6 +286,8 @@ export default {
             <option value="!=">!=</option>
           </select>
         </div>
+        <p>Numero 1</p>
+        <p>Numero 2</p>
       `
       var data = { value: '' }
       this.editor.addNode(
@@ -293,6 +304,8 @@ export default {
     addBucleNode() {
       var html = `
         <h3 >Bucle</h3>
+        <p>Numero 1:Numero de Iteraciones</p>
+        <p>Numero 2:Numero a Imprimir</p>
       `
       var data = { value: 0 }
       this.editor.addNode(
@@ -404,6 +417,7 @@ export default {
   flex-wrap: wrap;
 }
 .terminal {
+  height: 50vh !important;
   width: 30%;
   padding: 0 20px;
 }
@@ -423,7 +437,7 @@ export default {
 }
 
 .child-node {
-  width: 250px !important;
+  width: 300px !important;
   min-height: 100px !important;
   height: auto !important;
   border-radius: 10px;
@@ -452,7 +466,7 @@ export default {
 
 @media (max-width: 792px) {
   .terminal {
-    margin-top: 20px;
+    margin-top: 50px;
     width: 100%;
     padding: 0 20px;
   }
